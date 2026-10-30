@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f8fc">
+  <title>StudyFlow — Flashcards, the easy way.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18344d;
+      --muted: #60788d;
+      --blue: #286c9b;
+      --blue-dark: #1d5279;
+      --blue-soft: #e8f3fb;
+      --blue-pale: #f4f8fc;
+      --line: #d9e4ed;
+      --white: #fff;
+      --green: #267553;
+      --shadow: 0 12px 40px rgb(36 71 98 / 9%);
+      font-family: Lato, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--blue-pale);
+    }
+    * { box-sizing: border-box; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--blue-pale); }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    .topbar { height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(20px, 5vw, 72px); background: var(--white); border-bottom: 1px solid var(--line); }
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; font-size: 19px; font-weight: 700; letter-spacing: -.3px; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: var(--white); background: var(--blue); font-size: 16px; }
+    .top-note { color: var(--muted); font-size: 13px; }
+    main { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 56px; }
+    .progress-wrap { margin: 0 auto 26px; max-width: 660px; }
+    .progress-labels { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; color: #8294a3; font-size: 12px; }
+    .progress-labels span.active { color: var(--blue-dark); font-weight: 700; }
+    .progress-track { height: 4px; background: #dce7ef; }
+    .progress-value { height: 100%; width: 0; background: var(--blue); transition: width .25s ease; }
+    .panel { max-width: 820px; margin: 0 auto; padding: clamp(24px, 5vw, 48px); background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .view { display: none; }
+    .view.active { display: block; animation: enter .22s ease-out; }
+    @keyframes enter { from { opacity: .45; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 600px; margin-bottom: 12px; font-size: clamp(30px, 5vw, 46px); line-height: 1.12; letter-spacing: -1.1px; }
+    h2 { margin-bottom: 9px; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.18; letter-spacing: -.55px; }
+    h3 { margin-bottom: 7px; font-size: 17px; }
+    .lead { max-width: 580px; margin-bottom: 27px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+    .button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 17px; border: 1px solid var(--blue); border-radius: 3px; background: var(--blue); color: var(--white); font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background .15s, border-color .15s, transform .15s; }
+    .button:hover { border-color: var(--blue-dark); background: var(--blue-dark); }
+    .button:active { transform: translateY(1px); }
+    .button:focus-visible, .course-card:focus-visible, .source-card:focus-within { outline: 3px solid #8bc2e6; outline-offset: 2px; }
+    .button.secondary { border-color: var(--line); background: var(--white); color: var(--ink); }
+    .button.secondary:hover { border-color: #9eb6c8; background: #f8fbfd; }
+    .button.text { min-height: 40px; border-color: transparent; background: transparent; color: var(--blue); padding: 0 9px; }
+    .button:disabled { cursor: not-allowed; opacity: .45; }
+    .button-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 23px; }
+    .welcome-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 42px; align-items: center; }
+    .welcome-art { min-height: 228px; display: grid; place-items: center; position: relative; overflow: hidden; background: var(--blue-soft); }
+    .paper-stack { width: 150px; height: 168px; padding: 23px 18px; background: var(--white); border: 1px solid #d1e1ed; box-shadow: 8px 9px 0 #c5dfef; transform: rotate(-3deg); }
+    .paper-title { width: 78%; height: 9px; margin-bottom: 18px; background: #c8e0f0; }
+    .paper-line { height: 5px; margin: 10px 0; background: #e3edf4; }
+    .paper-line.short { width: 70%; }
+    .spark { position: absolute; color: var(--blue); font-size: 23px; }
+    .spark.one { top: 34px; left: 22%; }
+    .spark.two { right: 18%; bottom: 38px; font-size: 17px; }
+    .notice { margin-top: 19px; padding: 12px 14px; border-left: 3px solid #a8cce3; background: #f5f9fc; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+    .section-heading .lead { margin-bottom: 0; }
+    .course-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .course-card { min-height: 95px; display: flex; gap: 14px; align-items: flex-start; padding: 17px; border: 1px solid var(--line); background: var(--white); text-align: left; cursor: pointer; transition: border .15s, background .15s; }
+    .course-card:hover { border-color: #99bed7; }
+    .course-card.selected { border-color: var(--blue); background: #f3f9fd; box-shadow: inset 0 0 0 1px var(--blue); }
+    .course-icon { width: 37px; height: 37px; flex: 0 0 auto; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-weight: 700; }
+    .course-title { display: block; margin: 1px 0 5px; font-weight: 700; }
+    .course-meta { display: block; color: var(--muted); font-size: 13px; }
+    .selection-dot { width: 17px; height: 17px; flex: 0 0 auto; margin: 2px 0 0 auto; border: 1px solid #a9bbc9; border-radius: 50%; }
+    .course-card.selected .selection-dot { border: 5px solid var(--blue); }
+    .source-list { display: grid; gap: 10px; }
+    .source-card { display: flex; align-items: flex-start; gap: 13px; padding: 15px; border: 1px solid var(--line); cursor: pointer; }
+    .source-card:hover { background: #f9fbfd; }
+    .source-card input { width: 17px; height: 17px; flex: 0 0 auto; margin: 2px 0 0; accent-color: var(--blue); }
+    .source-content { flex: 1; }
+    .source-title { display: block; margin-bottom: 4px; font-weight: 700; }
+    .source-meta { display: block; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .source-type { flex: 0 0 auto; padding: 4px 8px; background: var(--blue-soft); color: var(--blue-dark); font-size: 11px; }
+    .guide-head { display: flex; justify-content: space-between; gap: 15px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+    .guide-head p { margin: 0; color: var(--muted); font-size: 13px; }
+    .guide-body { padding: 7px 0 4px; }
+    .guide-section { padding: 16px 0; border-bottom: 1px solid #e8eef3; }
+    .guide-section h3 { margin-bottom: 8px; }
+    .guide-section p, .guide-section li { color: #405a70; line-height: 1.55; }
+    .guide-section ul { margin: 7px 0 0; padding-left: 20px; }
+    .flashcard { margin: 15px 0; padding: 17px 18px; border-left: 3px solid var(--blue); background: #f4f9fc; }
+    .flashcard .term { margin-bottom: 6px; font-weight: 700; }
+    .flashcard .definition { margin: 0; color: var(--muted); line-height: 1.5; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 3; max-width: min(400px, calc(100% - 44px)); padding: 13px 16px; background: #18344d; color: white; box-shadow: var(--shadow); font-size: 14px; }
+    .toast[hidden] { display: none; }
+    footer { padding: 18px 20px 30px; color: var(--muted); text-align: center; font-size: 12px; }
+    @media (max-width: 720px) {
+      main { padding-top: 24px; }
+      .panel { padding: 24px 20px; }
+      .welcome-grid { grid-template-columns: 1fr; gap: 25px; }
+      .welcome-art { min-height: 175px; }
+      .paper-stack { transform: scale(.84) rotate(-3deg); }
+      .section-heading { align-items: flex-start; flex-direction: column; }
+      .course-grid { grid-template-columns: 1fr; }
+      .progress-labels { font-size: 10px; }
+      .source-type { display: none; }
+    }
+    @media print {
+      body { min-width: 0; background: #fff; }
+      .topbar, .progress-wrap, footer, .button-row, .guide-actions, .eyebrow { display: none !important; }
+      main { width: 100%; margin: 0; padding: 0; }
+      .panel { max-width: none; padding: 0; border: 0; box-shadow: none; }
+      #welcome, #classes, #sources { display: none !important; }
+      #guide { display: block !important; }
+      .guide-section, .flashcard { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="StudyFlow home" id="home-link"><span class="brand-mark" aria-hidden="true">S</span><span>StudyFlow</span></a>
+    <span class="top-note">Flashcards, the easy way.</span>
+  </header>
+  <main>
+    <nav class="progress-wrap" aria-label="Study guide steps">
+      <div class="progress-labels"><span data-progress-label="0" class="active">Connect</span><span data-progress-label="1">Choose class</span><span data-progress-label="2">Pick materials</span><span data-progress-label="3">Your guide</span></div>
+      <div class="progress-track" role="progressbar" aria-label="Study guide setup" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><div class="progress-value" id="progress-value"></div></div>
+    </nav>
+    <div class="panel">
+      <section class="view active" id="welcome" aria-labelledby="welcome-title">
+        <div class="welcome-grid">
+          <div>
+            <p class="eyebrow">A calmer way to study</p>
+            <h1 id="welcome-title">Your class materials, ready to study.</h1>
+            <p class="lead">Choose a class, gather the materials that matter, and get a clear study guide with quick review cards.</p>
+            <button class="button" id="connect-button" type="button">Connect to Canvas <span aria-hidden="true">→</span></button>
+            <div class="notice">This preview uses sample course content. Canvas sign-in and live course imports need a Canvas developer setup before they can connect to a real school account.</div>
+          </div>
+          <div class="welcome-art" aria-hidden="true"><span class="spark one">✳</span><div class="paper-stack"><div class="paper-title"></div><div class="paper-line"></div><div class="paper-line short"></div><div class="paper-line"></div><div class="paper-line short"></div><div class="paper-line"></div></div><span class="spark two">✦</span></div>
+        </div>
+      </section>
+      <section class="view" id="classes" aria-labelledby="classes-title">
+        <p class="eyebrow">Canvas connected · sample account</p>
+        <div class="section-heading"><div><h2 id="classes-title">Which class are you studying?</h2><p class="lead">Choose a course to gather its class materials.</p></div></div>
+        <div class="course-grid" id="course-grid"></div>
+        <div class="button-row"><button class="button secondary" type="button" data-go="welcome">Back</button><button class="button" id="class-continue" type="button" disabled>Continue <span aria-hidden="true">→</span></button></div>
+      </section>
+      <section class="view" id="sources" aria-labelledby="sources-title">
+        <p class="eyebrow" id="source-course-label">Course materials</p>
+        <div class="section-heading"><div><h2 id="sources-title">What should go in your guide?</h2><p class="lead">Pick the pages, slides, sites, and videos you want to review.</p></div></div>
+        <div class="source-list" id="source-list"></div>
+        <div class="button-row"><button class="button secondary" type="button" data-go="classes">Back</button><button class="button" id="make-guide" type="button">Make my study guide <span aria-hidden="true">→</span></button></div>
+      </section>
+      <section class="view" id="guide" aria-labelledby="guide-title">
+        <div class="guide-head"><div><p class="eyebrow">Your study guide</p><h2 id="guide-title">Study guide</h2><p id="guide-subtitle"></p></div><button class="button secondary guide-actions" id="edit-sources" type="button">Edit materials</button></div>
+        <div class="guide-body" id="guide-body"></div>
+        <div class="button-row"><button class="button secondary" type="button" data-go="classes">Choose another class</button><button class="button" id="quizlet-export" type="button">Export flashcards for Quizlet</button><button class="button secondary" id="pdf-export" type="button">Print / save as PDF</button></div>
+      </section>
+    </div>
+  </main>
+  <footer>StudyFlow · Make your course materials easier to study.</footer>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <script>
+    const courses = [
+      { id: 'biology', title: 'Biology 101', detail: 'Cell structure · Week 3', icon: 'B', count: '4 materials' },
+      { id: 'history', title: 'World History', detail: 'The Silk Road · Unit 4', icon: 'H', count: '3 materials' },
+      { id: 'statistics', title: 'Statistics', detail: 'Probability · Chapter 6', icon: 'S', count: '3 materials' }
+    ];
+
+    const materialSets = {
+      biology: [
+        { id: 'cell-page', type: 'Canvas page', title: 'Cell structure lecture notes', detail: 'Organelles, membranes, and cell transport.', terms: [['Cell membrane', 'A selectively permeable boundary that controls what enters and leaves a cell.'], ['Mitochondrion', 'An organelle that converts energy from food into ATP the cell can use.'], ['Ribosome', 'A structure that builds proteins from amino acids.']] },
+        { id: 'cell-slides', type: 'Slides', title: 'Week 3: Inside the cell', detail: '18 lecture slides linked from the Canvas page.', terms: [['Nucleus', 'The membrane-bound organelle that holds most of a cell’s DNA.'], ['Cytoplasm', 'The material inside the cell membrane, outside the nucleus.']] },
+        { id: 'cell-site', type: 'Website', title: 'Interactive cell explorer', detail: 'Linked reading about eukaryotic cell parts.', terms: [['Organelle', 'A specialized structure inside a cell that performs a particular function.']] },
+        { id: 'cell-video', type: 'Video', title: 'Cell transport explained', detail: '12-minute class video · diffusion and osmosis.', terms: [['Diffusion', 'The net movement of particles from higher concentration to lower concentration.'], ['Osmosis', 'The diffusion of water across a selectively permeable membrane.']] }
+      ],
+      history: [
+        { id: 'silk-page', type: 'Canvas page', title: 'The Silk Road overview', detail: 'Trade routes, cities, and cultural exchange.', terms: [['Silk Road', 'A network of trade routes connecting East Asia with Central Asia and the Mediterranean.'], ['Caravanserai', 'A roadside inn where merchants and travelers could rest and resupply.']] },
+        { id: 'silk-slides', type: 'Slides', title: 'Unit 4: Routes and exchange', detail: '15 slides linked from the unit page.', terms: [['Cultural diffusion', 'The spread of ideas, technologies, and customs between societies.'], ['Oasis', 'A fertile place in a desert where water is available.']] },
+        { id: 'silk-video', type: 'Video', title: 'A journey along the Silk Road', detail: '9-minute course video · trade and travel.', terms: [['Caravan', 'A group of travelers journeying together, often for safety and trade.']] }
+      ],
+      statistics: [
+        { id: 'prob-page', type: 'Canvas page', title: 'Probability rules', detail: 'Sample spaces, events, and complements.', terms: [['Sample space', 'The set of all possible outcomes of an experiment.'], ['Complement', 'The event that an outcome is not in a specified event.']] },
+        { id: 'prob-slides', type: 'Slides', title: 'Chapter 6: Probability', detail: '20 lecture slides linked from the chapter page.', terms: [['Independent events', 'Events where the occurrence of one does not change the probability of the other.'], ['Conditional probability', 'The probability of an event given that another event has occurred.']] },
+        { id: 'prob-site', type: 'Website', title: 'Probability practice set', detail: 'Linked examples with worked solutions.', terms: [['Expected value', 'The long-run average outcome, calculated by weighting outcomes by their probabilities.']] }
+      ]
+    };
+
+    const state = { step: 'welcome', courseId: null, selectedMaterials: new Set() };
+    const views = ['welcome', 'classes', 'sources', 'guide'];
+    const courseFor = id => courses.find(course => course.id === id);
+    const materialsFor = () => materialSets[state.courseId] || [];
+    const esc = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.hidden = false;
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => { toast.hidden = true; }, 4200);
+    }
+
+    function renderCourses() {
+      const grid = document.getElementById('course-grid');
+      grid.innerHTML = courses.map(course => `
+        <button class="course-card${state.courseId === course.id ? ' selected' : ''}" type="button" data-course="${course.id}" aria-pressed="${state.courseId === course.id}">
+          <span class="course-icon" aria-hidden="true">${course.icon}</span>
+          <span><span class="course-title">${esc(course.title)}</span><span class="course-meta">${esc(course.detail)} · ${esc(course.count)}</span></span>
+          <span class="selection-dot" aria-hidden="true"></span>
+        </button>`).join('');
+      grid.querySelectorAll('[data-course]').forEach(button => button.addEventListener('click', () => {
+        state.courseId = button.dataset.course;
+        state.selectedMaterials = new Set(materialsFor().map(item => item.id));
+        renderCourses();
+        document.getElementById('class-continue').disabled = false;
+      }));
+      document.getElementById('class-continue').disabled = !state.courseId;
+    }
+
+    function renderSources() {
+      const course = courseFor(state.courseId);
+      document.getElementById('source-course-label').textContent = `${course.title} · Course materials`;
+      document.getElementById('source-list').innerHTML = materialsFor().map(item => `
+        <label class="source-card">
+          <input type="checkbox" value="${item.id}" ${state.selectedMaterials.has(item.id) ? 'checked' : ''}>
+          <span class="source-content"><span class="source-title">${esc(item.title)}</span><span class="source-meta">${esc(item.detail)}</span></span>
+          <span class="source-type">${esc(item.type)}</span>
+        </label>`).join('');
+      document.querySelectorAll('#source-list input').forEach(input => input.addEventListener('change', () => {
+        if (input.checked) state.selectedMaterials.add(input.value);
+        else state.selectedMaterials.delete(input.value);
+        document.getElementById('make-guide').disabled = state.selectedMaterials.size === 0;
+      }));
+      document.getElementById('make-guide').disabled = state.selectedMaterials.size === 0;
+    }
+
+    function renderGuide() {
+      const course = courseFor(state.courseId);
+      const selected = materialsFor().filter(item => state.selectedMaterials.has(item.id));
+      document.getElementById('guide-title').textContent = `${course.title} Study Guide`;
+      document.getElementById('guide-subtitle').textContent = `Made from ${selected.length} selected ${selected.length === 1 ? 'source' : 'sources'} · ${selected.map(item => item.type.toLowerCase()).join(', ')}`;
+      const terms = new Map();
+      selected.forEach(item => item.terms.forEach(([term, definition]) => terms.set(term, definition)));
+      document.getElementById('guide-body').innerHTML = `
+        <section class="guide-section"><h3>Key ideas</h3><ul>${selected.map(item => `<li><strong>${esc(item.title)}:</strong> ${esc(item.detail)}</li>`).join('')}</ul></section>
+        <section class="guide-section"><h3>Review cards</h3><p>Use these key terms to check your understanding.</p>${Array.from(terms, ([term, definition]) => `<article class="flashcard"><p class="term">${esc(term)}</p><p class="definition">${esc(definition)}</p></article>`).join('')}</section>
+        <section class="guide-section"><h3>Quick study tip</h3><p>Cover each definition, recall it in your own words, then check the answer. Revisit the terms that take more than one try.</p></section>`;
+    }
+
+    function go(step) {
+      if (!views.includes(step)) return;
+      if (step === 'sources') renderSources();
+      if (step === 'guide') renderGuide();
+      state.step = step;
+      views.forEach(id => document.getElementById(id).classList.toggle('active', id === step));
+      const index = views.indexOf(step);
+      document.getElementById('progress-value').style.width = `${index / (views.length - 1) * 100}%`;
+      document.querySelector('.progress-track').setAttribute('aria-valuenow', String(index));
+      document.querySelectorAll('[data-progress-label]').forEach(label => label.classList.toggle('active', Number(label.dataset.progressLabel) === index));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('connect-button').addEventListener('click', () => { renderCourses(); go('classes'); });
+    document.getElementById('class-continue').addEventListener('click', () => { if (state.courseId) go('sources'); });
+    document.getElementById('make-guide').addEventListener('click', () => { if (state.selectedMaterials.size) go('guide'); });
+    document.getElementById('edit-sources').addEventListener('click', () => go('sources'));
+    document.querySelectorAll('[data-go]').forEach(button => button.addEventListener('click', () => go(button.dataset.go)));
+    document.getElementById('home-link').addEventListener('click', event => { event.preventDefault(); go('welcome'); });
+    document.getElementById('pdf-export').addEventListener('click', () => window.print());
+    document.getElementById('quizlet-export').addEventListener('click', () => {
+      const rows = materialsFor().filter(item => state.selectedMaterials.has(item.id)).flatMap(item => item.terms);
+      const uniqueRows = Array.from(new Map(rows.map(([term, definition]) => [term, definition])).entries());
+      const content = uniqueRows.map(([term, definition]) => `${term}\t${definition}`).join('\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
+      link.download = `${state.courseId}-quizlet-cards.txt`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      showToast('Flashcards downloaded in Quizlet import format (term, then definition).');
+    });
+  </script>
+</body>
+</html>

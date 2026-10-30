@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: studyflow-icsm-project4
+    runtime: node
+    plan: free
+    buildCommand: echo "No build step required"
+    startCommand: node server.mjs
+    envVars:
+      - key: CANVAS_CLIENT_ID
+        sync: false
+      - key: CANVAS_CLIENT_SECRET
+        sync: false
+      - key: CANVAS_SCOPES
+        value: url:GET|/api/v1/courses url:GET|/api/v1/courses/:course_id/pages

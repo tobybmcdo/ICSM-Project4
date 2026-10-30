@@ -4,6 +4,8 @@
 
 Flashcards, the easy way. StudyFlow is a lightweight study-guide prototype for students. Choose a class, select course materials, and create a guide with review cards.
 
+**Live preview:** [studyflow-icsm-project4.onrender.com](https://studyflow-icsm-project4.onrender.com/). Canvas login activates after the school developer key is added to the Render service environment.
+
 ### Run it
 
 Requires Node.js 18 or newer. Copy `.env.example` to `.env`, add the Canvas Developer Key credentials, then start the app:

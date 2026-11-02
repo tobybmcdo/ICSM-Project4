@@ -145,6 +145,7 @@ const server = createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && requestUrl.pathname === '/') return serveStatic(res, 'index.html', 'text/html; charset=utf-8');
     if (req.method === 'GET' && requestUrl.pathname === '/app.js') return serveStatic(res, 'app.js', 'text/javascript; charset=utf-8');
+    if (req.method === 'GET' && requestUrl.pathname === '/institutions.json') return serveStatic(res, 'institutions.json', 'application/json; charset=utf-8');
     if (req.method === 'GET' && requestUrl.pathname === '/api/config') return sendJson(res, 200, { canvasReady: Boolean(clientId && clientSecret), scopes: requestedScopes.split(/\s+/).filter(Boolean) });
     if (req.method === 'GET' && requestUrl.pathname === '/api/session') return sendJson(res, 200, { connected: Boolean(session?.tokens?.access_token), user: session?.tokens?.user?.name || null, canvasOrigin: session?.canvasOrigin || null });
 

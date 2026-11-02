@@ -14,7 +14,7 @@ Requires Node.js 18 or newer. Copy `.env.example` to `.env`, add the Canvas Deve
 node server.mjs
 ```
 
-Open `http://localhost:3000`. Canvas sign-in requires your school’s Canvas URL and a developer key registered with this exact redirect URL: `http://localhost:3000/auth/callback`. Your Canvas administrator may need to create or approve the key. Never commit `.env` or share its client secret.
+Open `http://localhost:3000`. Search for and select your school from the included Canvas institution directory; StudyFlow will use that school's Canvas address. If your school is not listed, use the linked Canvas school lookup. Canvas sign-in also requires a developer key registered with this exact redirect URL: `http://localhost:3000/auth/callback`. Your Canvas administrator may need to create or approve the key. Never commit `.env` or share its client secret.
 
 ### Deploy as a Node web service on Render
 
@@ -30,6 +30,8 @@ Render supplies the service URL and port; `server.mjs` uses them automatically. 
 StudyFlow uses Canvas OAuth 2.0. The browser never receives the developer key secret or the user's Canvas access token. The local server stores OAuth tokens in memory for the session and requests read-only access to active courses and published course pages. It loads course names, course codes, terms, syllabi, and page text. Sign out clears the local session and asks Canvas to revoke the token.
 
 The app does not yet extract content from files, external websites, or linked videos. If Canvas sign-in is not configured, use **Preview with sample data** to explore the study-guide flow. Quizlet-compatible flashcards and print-to-PDF work in both modes.
+
+The searchable directory in `institutions.json` is a curated starter list, not a complete Canvas customer registry. It currently includes verified college Canvas portals and schools listed by the Nevada Department of Education; the directory can be expanded as additional official Canvas URLs are confirmed. Some Nevada schools use the same statewide Canvas portal.
 
 ## Team
 

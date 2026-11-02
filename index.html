@@ -73,6 +73,17 @@
     .canvas-form label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 700; }
     .canvas-form input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid #bdcdd9; border-radius: 2px; background: var(--white); color: var(--ink); font: inherit; }
     .canvas-form input:focus { border-color: var(--blue); outline: 3px solid #8bc2e655; }
+    .school-picker { position: relative; }
+    .school-results { position: absolute; z-index: 2; top: calc(100% + 4px); right: 0; left: 0; max-height: 280px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; border: 1px solid var(--line); background: var(--white); box-shadow: var(--shadow); }
+    .school-results[hidden] { display: none; }
+    .school-option { display: block; width: 100%; padding: 10px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+    .school-option:hover, .school-option[aria-selected="true"] { background: var(--blue-soft); }
+    .canvas-form > .button-row { position: relative; z-index: 3; }
+    .school-name { display: block; font-weight: 700; }
+    .school-meta { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .school-selection { min-height: 18px; margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .school-help { margin: 8px 0 0; font-size: 12px; }
+    .school-help a { color: var(--blue-dark); }
     .config-note { margin: 9px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
     .load-message { min-height: 23px; margin: 0 0 12px; color: var(--muted); font-size: 13px; }
     .course-extra { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
@@ -153,8 +164,14 @@
             <h1 id="welcome-title">Your class materials, ready to study.</h1>
             <p class="lead">Choose a class, gather the materials that matter, and get a clear study guide with quick review cards.</p>
             <form class="canvas-form" id="canvas-login" method="post" action="/auth/start">
-              <label for="canvas-url">Your school's Canvas address</label>
-              <input id="canvas-url" name="canvasUrl" type="url" inputmode="url" placeholder="https://school.instructure.com" autocomplete="url" required>
+              <label for="canvas-school-search">Search for your college or school</label>
+              <div class="school-picker">
+                <input id="canvas-school-search" type="search" placeholder="Start typing a school name" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="canvas-school-results">
+                <input id="canvas-url" name="canvasUrl" type="hidden">
+                <ul class="school-results" id="canvas-school-results" role="listbox" hidden></ul>
+              </div>
+              <p class="school-selection" id="school-selection" aria-live="polite"></p>
+              <p class="school-help">Can’t find it? <a href="https://www.instructure.com/canvas/login" target="_blank" rel="noopener noreferrer">Look up your Canvas school</a>.</p>
               <div class="button-row"><button class="button" id="connect-button" type="submit" disabled>Sign in with Canvas <span aria-hidden="true">→</span></button><button class="button secondary" id="preview-button" type="button">Preview with sample data</button></div>
               <p class="config-note" id="canvas-config-note">Canvas sign-in needs the app’s developer key setup. You can still preview the sample flow.</p>
             </form>

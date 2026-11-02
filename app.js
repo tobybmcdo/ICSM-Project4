@@ -251,16 +251,108 @@ document.getElementById('quizlet-export').addEventListener('click', () => {
 });
 
 async function initialize() {
+  const search = document.getElementById('canvas-school-search');
+  const results = document.getElementById('canvas-school-results');
+  const hiddenUrl = document.getElementById('canvas-url');
+  const selection = document.getElementById('school-selection');
+  const connect = document.getElementById('connect-button');
+  let institutions = [];
+  let canvasReady = false;
+  let activeOption = -1;
+  let selectedInstitution = null;
+
+  function closeResults() {
+    results.hidden = true;
+    search.setAttribute('aria-expanded', 'false');
+    search.removeAttribute('aria-activedescendant');
+    activeOption = -1;
+  }
+
+  function setActiveOption(index) {
+    const options = [...results.querySelectorAll('[role="option"]')];
+    if (!options.length) return;
+    activeOption = (index + options.length) % options.length;
+    options.forEach((option, i) => option.setAttribute('aria-selected', String(i === activeOption)));
+    search.setAttribute('aria-activedescendant', options[activeOption].id);
+    options[activeOption].scrollIntoView({ block: 'nearest' });
+  }
+
+  function chooseInstitution(institution) {
+    selectedInstitution = institution;
+    search.value = institution.name;
+    hiddenUrl.value = institution.url;
+    selection.textContent = `Canvas site: ${institution.url}`;
+    connect.disabled = !canvasReady;
+    closeResults();
+    if (canvasReady) {
+      document.getElementById('canvas-login').requestSubmit();
+    } else {
+      showToast('School selected. Canvas sign-in is not configured yet; you can still preview the sample data.');
+    }
+  }
+
+  function renderResults() {
+    const query = search.value.trim().toLocaleLowerCase();
+    selectedInstitution = null;
+    hiddenUrl.value = '';
+    selection.textContent = '';
+    connect.disabled = true;
+    if (!query) { closeResults(); return; }
+    const matches = institutions
+      .map(item => ({ item, rank: item.name.toLocaleLowerCase().startsWith(query) ? 0 : 1 }))
+      .filter(({ item }) => [item.name, ...(item.aliases || [])].some(value => value.toLocaleLowerCase().includes(query)))
+      .sort((a, b) => a.rank - b.rank || a.item.name.localeCompare(b.item.name))
+      .slice(0, 8);
+    if (!matches.length) {
+      results.innerHTML = '<li class="school-option" role="option" aria-selected="false">No match yet. Use the Canvas lookup link below.</li>';
+    } else {
+      results.innerHTML = matches.map(({ item }, index) => `<li><button class="school-option" id="school-option-${index}" type="button" role="option" aria-selected="false" data-index="${institutions.indexOf(item)}"><span class="school-name">${esc(item.name)}</span><span class="school-meta">${esc(item.type)} · ${esc(new URL(item.url).hostname)}</span></button></li>`).join('');
+    }
+    results.hidden = false;
+    search.setAttribute('aria-expanded', 'true');
+  }
+
+  search.addEventListener('input', renderResults);
+  search.addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown' && !results.hidden) { event.preventDefault(); setActiveOption(activeOption + 1); }
+    else if (event.key === 'ArrowUp' && !results.hidden) { event.preventDefault(); setActiveOption(activeOption - 1); }
+    else if (event.key === 'Enter' && !results.hidden && activeOption >= 0) {
+      event.preventDefault();
+      const option = results.querySelectorAll('[role="option"]')[activeOption];
+      const institution = institutions[Number(option?.dataset.index)];
+      if (institution) chooseInstitution(institution);
+    } else if (event.key === 'Escape') closeResults();
+  });
+  results.addEventListener('click', event => {
+    const option = event.target.closest('[data-index]');
+    const institution = option && institutions[Number(option.dataset.index)];
+    if (institution) chooseInstitution(institution);
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.school-picker')) closeResults();
+  });
+  document.getElementById('canvas-login').addEventListener('submit', event => {
+    if (!selectedInstitution || !hiddenUrl.value) {
+      event.preventDefault();
+      showToast('Search for and select your school before signing in.');
+      search.focus();
+    }
+  });
+
   try {
+    const directoryResponse = await fetch('/institutions.json', { headers: { Accept: 'application/json' } });
+    if (!directoryResponse.ok) throw new Error('Could not load institution directory.');
+    institutions = await directoryResponse.json();
     const config = await api('/api/config');
-    const connect = document.getElementById('connect-button');
+    canvasReady = config.canvasReady;
     const note = document.getElementById('canvas-config-note');
-    connect.disabled = !config.canvasReady;
-    if (config.canvasReady) note.textContent = 'You’ll be redirected to Canvas to approve read access to your courses and published pages.';
+    if (canvasReady) note.textContent = 'Select your school, then approve read access to your courses and published pages on Canvas.';
+    if (!institutions.length) throw new Error('Institution directory is empty.');
   } catch {
     document.getElementById('canvas-config-note').textContent = 'Start StudyFlow with node server.mjs to connect Canvas. You can still preview the sample flow.';
-    document.getElementById('connect-button').disabled = true;
+    canvasReady = false;
   }
+  connect.disabled = true;
   const query = new URLSearchParams(location.search);
   if (query.has('canvas_error')) showToast(query.get('canvas_error'));
   if (query.has('canvas_connected')) showToast('Canvas connected. Your active classes are ready.');

@@ -40,7 +40,7 @@ function showToast(message) {
 async function api(path) {
   const response = await fetch(path, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error || `StudyFlow could not load Canvas data (HTTP ${response.status}).`);
+  if (!response.ok) throw new Error(body.error || `Study Simple could not load Canvas data (HTTP ${response.status}).`);
   return body;
 }
 
@@ -372,7 +372,7 @@ async function initialize() {
     if (canvasReady) note.textContent = 'Select your school, then approve read access to your courses and published pages on Canvas.';
     if (!institutions.length) throw new Error('Institution directory is empty.');
   } catch {
-    document.getElementById('canvas-config-note').textContent = 'Start StudyFlow with node server.mjs to connect Canvas. You can still preview the sample flow.';
+    document.getElementById('canvas-config-note').textContent = 'Start Study Simple with node server.mjs to connect Canvas. You can still preview the sample flow.';
     canvasReady = false;
   }
   connect.disabled = true;

@@ -21,7 +21,7 @@ const clientId = process.env.CANVAS_CLIENT_ID || '';
 const clientSecret = process.env.CANVAS_CLIENT_SECRET || '';
 const requestedScopes = process.env.CANVAS_SCOPES || 'url:GET|/api/v1/courses url:GET|/api/v1/courses/:course_id/pages';
 const sessions = new Map();
-const sessionCookie = 'studyflow_session';
+const sessionCookie = 'study_simple_session';
 const sessionLifetime = 8 * 60 * 60 * 1000;
 
 function randomId() { return randomBytes(32).toString('base64url'); }
@@ -150,7 +150,7 @@ const server = createServer(async (req, res) => {
     if (req.method === 'GET' && requestUrl.pathname === '/api/session') return sendJson(res, 200, { connected: Boolean(session?.tokens?.access_token), user: session?.tokens?.user?.name || null, canvasOrigin: session?.canvasOrigin || null });
 
     if (req.method === 'POST' && requestUrl.pathname === '/auth/start') {
-      if (!clientId || !clientSecret) return redirect(res, redirectWithQuery('canvas_error', 'Canvas sign-in is not configured yet. Add the developer key settings from .env.example, then restart StudyFlow.'));
+      if (!clientId || !clientSecret) return redirect(res, redirectWithQuery('canvas_error', 'Canvas sign-in is not configured yet. Add the developer key settings from .env.example, then restart Study Simple.'));
       const body = new URLSearchParams(await readBody(req));
       const canvasOrigin = normalizeCanvasOrigin(body.get('canvasUrl') || '');
       const authSession = getSession(req, res, true);
@@ -164,7 +164,7 @@ const server = createServer(async (req, res) => {
       authorize.searchParams.set('redirect_uri', redirectUri);
       authorize.searchParams.set('state', authSession.oauthState);
       authorize.searchParams.set('scope', requestedScopes);
-      authorize.searchParams.set('purpose', 'StudyFlow course and page access');
+      authorize.searchParams.set('purpose', 'Study Simple course and page access');
       return redirect(res, authorize.href);
     }
 
@@ -228,12 +228,12 @@ const server = createServer(async (req, res) => {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Not found.');
   } catch (error) {
-    if (req.url?.startsWith('/api/')) return sendJson(res, 502, { error: error.message || 'StudyFlow could not reach Canvas.' });
-    return redirect(res, redirectWithQuery('canvas_error', error.message || 'StudyFlow could not complete Canvas sign-in.'));
+    if (req.url?.startsWith('/api/')) return sendJson(res, 502, { error: error.message || 'Study Simple could not reach Canvas.' });
+    return redirect(res, redirectWithQuery('canvas_error', error.message || 'Study Simple could not complete Canvas sign-in.'));
   }
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`StudyFlow is running at ${appOrigin}`);
+  console.log(`Study Simple is running at ${appOrigin}`);
   if (!clientId || !clientSecret) console.log('Canvas sign-in is not configured. Copy .env.example to .env and add your Canvas developer key settings.');
 });

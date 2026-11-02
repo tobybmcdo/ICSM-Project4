@@ -4,7 +4,7 @@
 
 Flashcards, the easy way. Study Simple is a lightweight study-guide prototype for students. Choose a class, select course materials, and create a guide with review cards.
 
-**Live preview:** [Study Simple](https://studyflow-icsm-project4.onrender.com/). Render retains this service’s original hostname after its dashboard name changes. Canvas login activates after the school developer key is added to the Render service environment.
+**Live preview:** [Study Simple](https://study-simple-icsm-project4.onrender.com/). Canvas login activates after the school developer key is added to the Render service environment.
 
 ### Run it
 

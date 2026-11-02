@@ -31,7 +31,7 @@ StudyFlow uses Canvas OAuth 2.0. The browser never receives the developer key se
 
 The app does not yet extract content from files, external websites, or linked videos. If Canvas sign-in is not configured, use **Preview with sample data** to explore the study-guide flow. Quizlet-compatible flashcards and print-to-PDF work in both modes.
 
-The searchable directory in `institutions.json` is a curated list of 174 school and district entries, not a complete Canvas customer registry. It includes college portals and K–12 schools and districts with Canvas addresses confirmed from official institution or state education pages. Some schools share a district or statewide Canvas portal; URLs may change, so use the official Canvas school lookup if an entry no longer works.
+The searchable directory in `institutions.json` is a curated list of 202 school and district entries, not a complete Canvas customer registry. It includes college portals and K–12 schools and districts with Canvas addresses confirmed from official institution or state education pages. Some schools share a district or statewide Canvas portal; URLs may change, so use the official Canvas school lookup if an entry no longer works.
 
 ## Team
 

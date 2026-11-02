@@ -1,10 +1,10 @@
 # ICSM Project 4
 
-## StudyFlow
+## Study Simple
 
-Flashcards, the easy way. StudyFlow is a lightweight study-guide prototype for students. Choose a class, select course materials, and create a guide with review cards.
+Flashcards, the easy way. Study Simple is a lightweight study-guide prototype for students. Choose a class, select course materials, and create a guide with review cards.
 
-**Live preview:** [studyflow-icsm-project4.onrender.com](https://studyflow-icsm-project4.onrender.com/). Canvas login activates after the school developer key is added to the Render service environment.
+**Live preview:** [Study Simple](https://studyflow-icsm-project4.onrender.com/). Canvas login activates after the school developer key is added to the Render service environment.
 
 ### Run it
 
@@ -14,7 +14,7 @@ Requires Node.js 18 or newer. Copy `.env.example` to `.env`, add the Canvas Deve
 node server.mjs
 ```
 
-Open `http://localhost:3000`. Search for and select your school from the included Canvas institution directory; StudyFlow will use that school's Canvas address. If your school is not listed, use the linked Canvas school lookup. Canvas sign-in also requires a developer key registered with this exact redirect URL: `http://localhost:3000/auth/callback`. Your Canvas administrator may need to create or approve the key. Never commit `.env` or share its client secret.
+Open `http://localhost:3000`. Search for and select your school from the included Canvas institution directory; Study Simple will use that school's Canvas address. If your school is not listed, use the linked Canvas school lookup. Canvas sign-in also requires a developer key registered with this exact redirect URL: `http://localhost:3000/auth/callback`. Your Canvas administrator may need to create or approve the key. Never commit `.env` or share its client secret.
 
 ### Deploy as a Node web service on Render
 
@@ -27,11 +27,11 @@ Render supplies the service URL and port; `server.mjs` uses them automatically. 
 
 ### Canvas data
 
-StudyFlow uses Canvas OAuth 2.0. The browser never receives the developer key secret or the user's Canvas access token. The local server stores OAuth tokens in memory for the session and requests read-only access to active courses and published course pages. It loads course names, course codes, terms, syllabi, and page text. Sign out clears the local session and asks Canvas to revoke the token.
+Study Simple uses Canvas OAuth 2.0. The browser never receives the developer key secret or the user's Canvas access token. The local server stores OAuth tokens in memory for the session and requests read-only access to active courses and published course pages. It loads course names, course codes, terms, syllabi, and page text. Sign out clears the local session and asks Canvas to revoke the token.
 
 The app does not yet extract content from files, external websites, or linked videos. If Canvas sign-in is not configured, use **Preview with sample data** to explore the study-guide flow. Quizlet-compatible flashcards and print-to-PDF work in both modes.
 
-The searchable directory in `institutions.json` is a curated list of 202 school and district entries, not a complete Canvas customer registry. It includes college portals and K–12 schools and districts with Canvas addresses confirmed from official institution or state education pages. Some schools share a district or statewide Canvas portal; URLs may change, so use the official Canvas school lookup if an entry no longer works.
+The searchable directory in `institutions.json` is a curated list of 259 college and K–12 institution entries, not a complete Canvas customer registry. It includes college portals and K–12 schools and districts with Canvas addresses confirmed from official institution or state education pages. Some schools share a district or statewide Canvas portal; URLs may change, so use the official Canvas school lookup if an entry no longer works.
 
 ## Team
 

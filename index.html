@@ -35,8 +35,11 @@
     .top-note { color: var(--muted); font-size: 13px; }
     main { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 56px; }
     .progress-wrap { margin: 0 auto 26px; max-width: 660px; }
-    .progress-labels { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; color: #8294a3; font-size: 12px; }
-    .progress-labels span.active { color: var(--blue-dark); font-weight: 700; }
+    .progress-labels { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .progress-step { min-height: 34px; padding: 5px 8px; border: 1px solid transparent; border-radius: 2px; background: transparent; color: #8294a3; font: inherit; font-size: 12px; cursor: pointer; }
+    .progress-step:hover { background: var(--blue-soft); color: var(--blue-dark); }
+    .progress-step.active { border-color: #c7deed; background: var(--blue-soft); color: var(--blue-dark); font-weight: 700; }
+    .progress-step:focus-visible { outline: 3px solid #8bc2e6; outline-offset: 2px; }
     .progress-track { height: 4px; background: #dce7ef; }
     .progress-value { height: 100%; width: 0; background: var(--blue); transition: width .25s ease; }
     .panel { max-width: 820px; margin: 0 auto; padding: clamp(24px, 5vw, 48px); background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow); }
@@ -131,7 +134,8 @@
       .paper-stack { transform: scale(.84) rotate(-3deg); }
       .section-heading { align-items: flex-start; flex-direction: column; }
       .course-grid { grid-template-columns: 1fr; }
-      .progress-labels { font-size: 10px; }
+      .progress-labels { gap: 2px; }
+      .progress-step { padding: 5px 4px; font-size: 10px; }
       .source-type { display: none; }
     }
     @media print {
@@ -153,7 +157,12 @@
   </header>
   <main>
     <nav class="progress-wrap" aria-label="Study guide steps">
-      <div class="progress-labels"><span data-progress-label="0" class="active">Connect</span><span data-progress-label="1">Choose class</span><span data-progress-label="2">Pick materials</span><span data-progress-label="3">Your guide</span></div>
+      <div class="progress-labels">
+        <button class="progress-step active" type="button" data-progress-step="0" aria-current="step">Connect</button>
+        <button class="progress-step" type="button" data-progress-step="1">Choose class</button>
+        <button class="progress-step" type="button" data-progress-step="2">Pick materials</button>
+        <button class="progress-step" type="button" data-progress-step="3">Your guide</button>
+      </div>
       <div class="progress-track" role="progressbar" aria-label="Study guide setup" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><div class="progress-value" id="progress-value"></div></div>
     </nav>
     <div class="panel">

@@ -181,7 +181,12 @@ function go(step) {
   const index = viewIds.indexOf(step);
   document.getElementById('progress-value').style.width = `${index / (viewIds.length - 1) * 100}%`;
   document.querySelector('.progress-track').setAttribute('aria-valuenow', String(index));
-  document.querySelectorAll('[data-progress-label]').forEach(label => label.classList.toggle('active', Number(label.dataset.progressLabel) === index));
+  document.querySelectorAll('[data-progress-step]').forEach(button => {
+    const active = Number(button.dataset.progressStep) === index;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'step');
+    else button.removeAttribute('aria-current');
+  });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -222,6 +227,7 @@ document.getElementById('class-continue').addEventListener('click', async () => 
 document.getElementById('make-guide').addEventListener('click', () => { if (state.selectedMaterials.size) go('guide'); });
 document.getElementById('edit-sources').addEventListener('click', () => go('sources'));
 document.querySelectorAll('[data-go]').forEach(button => button.addEventListener('click', () => go(button.dataset.go)));
+document.querySelectorAll('[data-progress-step]').forEach(button => button.addEventListener('click', () => go(viewIds[Number(button.dataset.progressStep)])));
 document.getElementById('home-link').addEventListener('click', event => { event.preventDefault(); go('welcome'); });
 document.getElementById('pdf-export').addEventListener('click', () => window.print());
 document.getElementById('logout-button').addEventListener('click', async () => {

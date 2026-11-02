@@ -244,16 +244,33 @@ document.getElementById('logout-button').addEventListener('click', async () => {
     showToast('Canvas signed out.');
   }
 });
-document.getElementById('quizlet-export').addEventListener('click', () => {
+document.getElementById('quizlet-export').addEventListener('click', async () => {
   const selected = materialsFor().filter(item => state.selectedMaterials.has(String(item.id)));
   const uniqueRows = Array.from(new Map(selected.flatMap(extractReviewCards).map(([term, definition]) => [term, definition])).entries());
   const content = uniqueRows.map(([term, definition]) => `${term}\t${definition}`).join('\n');
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
-  link.download = `${String(state.courseId || 'studyflow').replace(/[^a-z0-9_-]/gi, '-')}-quizlet-cards.txt`;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-  showToast('Flashcards downloaded in Quizlet import format (term, then definition).');
+  if (!content) {
+    showToast('Select course materials first to create flashcards.');
+    return;
+  }
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable.');
+    await navigator.clipboard.writeText(content);
+  } catch {
+    const textarea = document.createElement('textarea');
+    textarea.value = content;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.append(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    if (!copied) {
+      showToast('Could not copy flashcards. Check your browser clipboard permissions and try again.');
+      return;
+    }
+  }
+  showToast('Flashcards copied. Paste them into Quizlet using tab between term and definition.');
 });
 
 async function initialize() {

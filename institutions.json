@@ -296,5 +296,7 @@
   {"name":"Carroll Community College","type":"College / university","url":"https://carrollcc.instructure.com","aliases":["Carroll Community College Maryland","Carroll CC","Carroll County Community College"]},
   {"name":"Howard Community College","type":"College / university","url":"https://howardcc.instructure.com","aliases":["Howard Community College Maryland","Howard CC","HCC Maryland"]},
   {"name":"Salisbury University","type":"College / university","url":"https://salisbury.instructure.com","aliases":["Salisbury University Maryland","Salisbury","SU Maryland","MyClasses"]},
-  {"name":"Anne Arundel Community College","type":"College / university","url":"https://aacc.instructure.com","aliases":["Anne Arundel Community College Maryland","Anne Arundel CC","AACC"]}
+  {"name":"Anne Arundel Community College","type":"College / university","url":"https://aacc.instructure.com","aliases":["Anne Arundel Community College Maryland","Anne Arundel CC","AACC"]},
+  {"name":"University of Delaware","type":"College / university","url":"https://udel.instructure.com","aliases":["Delaware","UDel","UD"]},
+  {"name":"Delaware State University","type":"College / university","url":"https://dsuonline.instructure.com","aliases":["Delaware State","DSU"]}
 ]
